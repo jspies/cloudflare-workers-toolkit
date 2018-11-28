@@ -1,0 +1,25 @@
+{
+  "name": "cloudflare-workers-toolkit",
+  "version": "0.0.4",
+  "description": "A collection of useful resources for working with cloudflare workers",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "nyc --reporter=html --reporter=text mocha --recursive"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers"
+  ],
+  "author": "Jonathan Spies",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.1.1"
+  },
+  "dependencies": {
+    "form-data": "^2.3.3",
+    "node-fetch": "^2.3.0"
+  }
+}
