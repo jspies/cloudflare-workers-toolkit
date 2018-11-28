@@ -28,3 +28,41 @@ describe("create", function() {
     }))
   });
 });
+
+describe("getSettings", function() {
+  it("works with accountId", async function() {
+    apiStub = sinon.stub();
+    workers = proxyquire("../../src/workers/workers", {
+      "../api": {
+        cfApiCall: apiStub.resolves({"result": [], "success": true})
+      }
+    })
+
+    await workers.getSettings({accountId: 11});
+    sinon.assert.calledWith(apiStub, sinon.match({url: '/accounts/11/workers/settings'}));
+  })
+
+  it("works with zoneId", async function() {
+    apiStub = sinon.stub();
+    workers = proxyquire("../../src/workers/workers", {
+      "../api": {
+        cfApiCall: apiStub.resolves({"result": [], "success": true})
+      }
+    })
+
+    await workers.getSettings({zoneId: 12});
+    sinon.assert.calledWith(apiStub, sinon.match({url: '/zones/12/workers/settings'}));
+  })
+
+  it("defaults to accountId", async function() {
+    apiStub = sinon.stub();
+    workers = proxyquire("../../src/workers/workers", {
+      "../api": {
+        cfApiCall: apiStub.resolves({"result": [], "success": true})
+      }
+    })
+
+    await workers.getSettings({accountId: 11, zoneId: 12});
+    sinon.assert.calledWith(apiStub, sinon.match({url: '/accounts/11/workers/settings'}));
+  })
+})

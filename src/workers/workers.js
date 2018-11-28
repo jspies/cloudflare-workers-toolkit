@@ -23,4 +23,24 @@ module.exports = {
       body: formData
     });
   },
+
+  async getSettings({zoneId, accountId} = {}) {
+    zoneId = zoneId || process.env.CLOUDFLARE_ZONE_ID;
+    accountId = accountId || process.CLOUDFLARE_ACCOUNT_ID;
+
+    let url;
+
+    if (accountId) {
+      url = `/accounts/${accountId}/workers/settings`
+    } else {
+      url = `/zones/${zoneId}/workers/settings`
+    }
+
+    const result = await api.cfApiCall({
+      url,
+      method: 'GET'
+    })
+
+    return result;
+  }
 }

@@ -13,6 +13,7 @@ npm install cloudflare-workers-toolkit
 ```
 const cloudflare = require("cloudflare-workers-toolkit");
 cloudflare.setAccountId(accountId); // helper that sets an ENV var
+cloudflare.setZoneId(zoneId);
 ```
 
 ### Workers
@@ -28,6 +29,10 @@ cloudflare.workers.deploy({
     });",
   bindings: []
 })
+```
+
+```
+cloudflare.workers.getSettings()
 ```
 
 Get all routes for a zone
@@ -46,9 +51,13 @@ cloudflare.storage.createNamespace({accountId, name: "namespace name"})
 
 Cloudflare worker toolkit requires the following environment variables to be set:
 
+```
 CLOUDFLARE_AUTH_EMAIL
 CLOUDFLARE_AUTH_KEY
+```
 
 Methods optionally take needed additional parameters, such as accountId. However, the following environment variables will be used as a fallback if set.
 
+```
 CLOUDFLARE_ACCOUNT_ID
+```
