@@ -26,6 +26,32 @@ const storage = proxyquire("../../src/storage/storage", {
   }
 });
 
+describe("isDuplicateNamespaceError", function() {
+  it("is a duplicate if the error code is 10014", function() {
+    const result = {
+      "success": false,
+      "errors": [{
+        "code": 10014
+      }]
+    }
+
+    assert.equal(storage.isDuplicateNamespaceError(result), true)
+  });
+
+  it("is is false if there are other errors", function() {
+    const result = {
+      "success": false,
+      "errors": [{
+        "code": 10014
+      }, {
+        "code": "red"
+      }]
+    }
+
+    assert.equal(storage.isDuplicateNamespaceError(result), false)
+  });
+});
+
 describe("createNamespace", function() {
   it("calls the correct url", async function() {
     const result = await storage.createNamespace({accountId: CREATE_ACCOUNT_ID, name: "myNamespace"});

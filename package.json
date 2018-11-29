@@ -1,8 +1,12 @@
 {
   "name": "cloudflare-workers-toolkit",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A collection of useful resources for working with cloudflare workers",
   "main": "src/index.js",
+  "repository":  {
+    "type": "git",
+    "url": "https://github.com/jspies/cloudflare-workers-toolkit"
+  },
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha --recursive"
   },
