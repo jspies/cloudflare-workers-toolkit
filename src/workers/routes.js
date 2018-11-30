@@ -32,5 +32,18 @@ module.exports = {
         script: scriptName
       })
     })
+  },
+
+  async remove({zoneId, routeId}) {
+    zoneId = zoneId || process.env.CLOUDFLARE_ZONE_ID;
+
+    if (!routeId) {
+      throw("You must specify a route Id");
+    }
+
+    return await api.cfApiCall({
+      url: `/zones/${zoneId}/workers/routes/${routeId}`,
+      method: 'DELETE'
+    });
   }
 }
