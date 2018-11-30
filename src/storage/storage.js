@@ -54,5 +54,43 @@ module.exports = {
     }
 
     return result;
+  },
+
+  /**
+   * Removes a namespace by Id. Will also look up a namespace by name and remove.
+   * @param {*} options
+   */
+  async removeNamespace({accountId, name, namespaceId}) {
+    accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+
+    if (!accountId) {
+      throw("You must provide an account ID");
+    }
+
+    if (!namespaceId && !name) {
+      throw("You must provide a namespace ID or name");
+    }
+
+    if (!namespaceId && name) {
+      const namespaces = await this.getNamespaces({accountId});
+
+      const namespace = namespaces.find(namespace => {
+        return namespace.title === name;
+      });
+      if (namespace) {
+        namespaceId = namespace.id;
+      }
+    }
+
+    if (!namespaceId) {
+      throw("Could not find the namespace");
+    }
+
+    const result = await api.cfApiCall({
+      url: `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`,
+      method: 'DELETE'
+    });
+
+    return result;
   }
 }

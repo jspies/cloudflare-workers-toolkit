@@ -1,3 +1,6 @@
+/**
+ * Routes are used instead of filters for Multiscript enabled zones. The primary difference is that a filter runs the one script enabled on the zone whereas a route has a script assigned to it.
+ */
 const api = require("../api");
 
 module.exports = {
