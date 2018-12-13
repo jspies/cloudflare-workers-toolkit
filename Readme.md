@@ -59,15 +59,20 @@ cloudflare.routes.remove({zoneId, routeId})
 
 ```
 cloudflare.storage.getNamespaces({accountId})
-cloudflare.storage.createNamespace({accountId, name: "namespace name"})
-cloudflare.storage.removeNamespace({accountId, namespaceId})
+cloudflare.storage.createNamespace({accountId, name: "namespace name or id"})
+cloudflare.storage.removeNamespace({accountId, name: "namespace name or id"})
 ```
 
-You can also pass `name` to remove. This method will look the id up for you before requesting the removal.
+Once you created name space you can set/query/delete keys value pairs into the namespace
 
 ```
-cloudflare.storage.removeNamespace({accountId, name: "my namespace name"})
+cloudflare.kv.getKeys({accountId, nameSpace: "name space name or id"}) // Return a list of keys in [{name: 'key name'},...] format
+cloudflare.kv.getKeyValue({accountId, nameSpace: "name space name or id", key: "key-name"}) // Return a key value
+cloudflare.kv.getAllKeysAndValues({accountId, nameSpace: "name space name or id"}) // Return a list of keys and values in format [{name: 'key name', value: 'value'},...] format
+cloudflare.kv.setKeyValue({accountId, nameSpace: "name space name or id", key: "key-name", value: 'value'})
+cloudflare.kv.deleteKey({accountId, nameSpace: "name space name or id", key: "key-name"})
 ```
+
 
 ### Credentials
 

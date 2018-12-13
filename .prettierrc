@@ -1,0 +1,9 @@
+{
+  "trailingComma": "none",
+  "singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.printWidth": 80,
+  "prettier.bracketSpacing": true,
+  "javascript.format.insertSpaceAfterSemicolonInForStatements": true
+}
