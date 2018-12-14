@@ -1,4 +1,30 @@
 const api = require('../api');
+const { isUUID } = require('../uuid');
+const { isApiSuccess, getResult } = require('../api_handler');
+
+async function getAccountInfo({ accountId, name }) {
+  const account = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+
+  if (!account) {
+    throw 'You must provide an account ID';
+  }
+
+  if (!name) {
+    return { account };
+  }
+
+  const nameSpaceId = !isUUID(name)
+    ? await getNamespaceByName({
+        accountId: account,
+        name: name
+      })
+    : name;
+
+  if (!nameSpaceId) {
+    throw 'Name space does not exist';
+  }
+  return { account, nameSpaceId };
+}
 
 /**
  * Returns true if this is a Duplicate Namespace Error
@@ -19,14 +45,10 @@ function isDuplicateNamespaceError(result) {
  * @param {*} name
  */
 async function createNamespace({ accountId, name }) {
-  accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
-
-  if (!accountId) {
-    throw 'You must provide an account ID';
-  }
+  const { account } = await getAccountInfo({ accountId });
 
   const result = await api.cfApiCall({
-    url: `/accounts/${accountId}/storage/kv/namespaces`,
+    url: `/accounts/${account}/storage/kv/namespaces`,
     method: `POST`,
     contentType: `application/json`,
     body: JSON.stringify({
@@ -42,22 +64,14 @@ async function createNamespace({ accountId, name }) {
  * @param {*} options
  */
 async function getNamespaces({ accountId } = {}) {
-  accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+  const { account } = await getAccountInfo({ accountId });
 
-  if (!accountId) {
-    throw 'You must provide an account ID';
-  }
-
-  let result = await api.cfApiCall({
-    url: `/accounts/${accountId}/storage/kv/namespaces`,
+  let response = await api.cfApiCall({
+    url: `/accounts/${account}/storage/kv/namespaces`,
     method: 'GET'
   });
 
-  if (result.success && result.result) {
-    result = result.result;
-  }
-
-  return result;
+  return isApiSuccess(response) ? getResult(response) : response;
 }
 
 /**
@@ -65,7 +79,7 @@ async function getNamespaces({ accountId } = {}) {
  * @param {*} options
  */
 async function getNamespaceByName({ accountId, name }) {
-  const account = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+  const { account } = await getAccountInfo({ accountId });
   let namespaceId = '';
 
   const namespaces = await getNamespaces({ accountId: account });
@@ -85,27 +99,13 @@ async function getNamespaceByName({ accountId, name }) {
  * @param {*} options
  */
 async function editNamespace({ accountId, name, newName }) {
-  let account = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
-
-  if (!account) {
-    throw 'You must provide an account ID';
-  }
-
   if (!name) {
     throw 'You must provide a namespace ID or name';
   }
-
-  const namespaceId = await getNamespaceByName({
-    accountId: account,
-    name
-  });
-
-  if (!namespaceId) {
-    throw 'Could not find the namespace';
-  }
+  const { account, nameSpaceId } = await getAccountInfo({ accountId, name });
 
   const result = await api.cfApiCall({
-    url: `/accounts/${account}/storage/kv/namespaces/${namespaceId}`,
+    url: `/accounts/${account}/storage/kv/namespaces/${nameSpaceId}`,
     method: 'PUT',
     contentType: `application/json`,
     body: JSON.stringify({
@@ -121,27 +121,13 @@ async function editNamespace({ accountId, name, newName }) {
  * @param {*} options
  */
 async function removeNamespace({ accountId, name }) {
-  let account = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
-
-  if (!account) {
-    throw 'You must provide an account ID';
-  }
-
   if (!name) {
     throw 'You must provide a namespace ID or name';
   }
 
-  const namespaceId = await getNamespaceByName({
-    accountId: account,
-    name
-  });
-
-  if (!namespaceId) {
-    throw 'Could not find the namespace';
-  }
-
+  const { account, nameSpaceId } = await getAccountInfo({ accountId, name });
   const result = await api.cfApiCall({
-    url: `/accounts/${account}/storage/kv/namespaces/${namespaceId}`,
+    url: `/accounts/${account}/storage/kv/namespaces/${nameSpaceId}`,
     method: 'DELETE'
   });
 

@@ -161,7 +161,7 @@ describe('removeNamespace', function() {
       await storage.removeNamespace({});
       assert(false);
     } catch (err) {
-      assert.equal(err, 'You must provide an account ID');
+      assert.equal(err, 'You must provide a namespace ID or name');
     }
   });
 
@@ -200,7 +200,7 @@ describe('removeNamespace', function() {
       });
       assert(false);
     } catch (e) {
-      assert.equal(e, 'Could not find the namespace');
+      assert.equal(e, 'Name space does not exist');
     }
   });
 
