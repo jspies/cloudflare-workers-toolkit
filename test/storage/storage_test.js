@@ -186,7 +186,7 @@ describe("removeNamespace", function() {
   it("looks up a namespace by name", async function() {
     apiStub.resetHistory();
 
-    const result = await storage.removeNamespace({
+    await storage.removeNamespace({
       accountId: "hjk",
       name: "TESTING"
     })
@@ -194,5 +194,79 @@ describe("removeNamespace", function() {
     sinon.assert.calledWith(apiStub, sinon.match({
       url: '/accounts/hjk/storage/kv/namespaces/namespace1'
     }))
+  });
+
+  describe("setKey", function() {
+    let storage;
+    let apiStub = sinon.stub();
+
+    before(function() {
+      storage = proxyquire("../../src/storage/storage", {
+        "../api": {
+          cfApiCall: apiStub.resolves({"result": [{
+            "id": "123",
+            "title": "TESTING"
+          }], "success": true})
+        }
+      });
+    });
+
+    it("returns an error if the namespace is not valid", async function() {
+      apiStub.resetHistory();
+
+      try {
+        await storage.setKey({
+          accountId: "hjk",
+          namespace: "CANNOT_FIND_TESTING",
+          key: "KEY",
+          value: "VALUE"
+        })
+        assert(false)
+      } catch(e) {
+        assert.equal(e, "Could not find the namespace")
+      }
+    });
+
+    it("errors without an namespaceID or name", async function() {
+      try {
+        await storage.setKey({accountId: 1});
+        assert(false);
+      } catch(err) {
+        assert.equal(err, "You must provide a namespace ID or namespace")
+      }
+    });
+
+    it("errors without an account ID", async function() {
+      try {
+        await storage.setKey({});
+        assert(false);
+      } catch(err) {
+        assert.equal(err, "You must provide an account ID")
+      }
+    });
+
+    it("calls the correct url", async function() {
+      sinon.stub(storage, 'getNamespaces').resolves([
+        {title: "myNamespace", id: 123}
+      ]);
+      const result = await storage.setKey({accountId: CREATE_ACCOUNT_ID, namespace: "myNamespace", key: "KEY", value: "VALUE"});
+      assert.equal(result.success, true);
+      storage.getNamespaces.restore();
+    });
+
+    it("accepts a namespace ID", async function() {
+      apiStub.resetHistory();
+  
+      await storage.setKey({
+        accountId: 111,
+        namespaceId: "123",
+        key: "KEY",
+        value: "VALUE"
+      });
+  
+      sinon.assert.calledWith(apiStub, sinon.match({
+        url: '/accounts/111/storage/kv/namespaces/123/values/KEY'
+      }))
+    });
   });
 });

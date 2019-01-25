@@ -92,5 +92,43 @@ module.exports = {
     });
 
     return result;
+  },
+
+  /**
+   * Will set the value for a key in the namespace
+   * If namespaceId is not provided, namespace will be used to look up the namespaceId
+   */
+  async setKey({key, value, accountId, namespace, namespaceId}) {
+    accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+
+    if (!accountId) {
+      throw("You must provide an account ID");
+    }
+
+    if (!namespaceId && !namespace) {
+      throw("You must provide a namespace ID or namespace");
+    }
+
+    if (!namespaceId && namespace) {
+      const namespaces = await this.getNamespaces({accountId});
+
+      const foundNamespace = namespaces.find(_namespace => {
+        return _namespace.title === namespace;
+      });
+
+      if (foundNamespace) {
+        namespaceId = foundNamespace.id;
+      } else {
+        throw("Could not find the namespace");
+      }
+    }
+
+    const result = await api.cfApiCall({
+      url: `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`,
+      method: 'PUT',
+      body: value
+    });
+
+    return result;
   }
 }
