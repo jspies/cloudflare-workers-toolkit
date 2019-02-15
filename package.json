@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-workers-toolkit",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A collection of useful resources for working with cloudflare workers",
   "main": "src/index.js",
   "repository":  {
