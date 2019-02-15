@@ -45,6 +45,25 @@ describe("deploy", function() {
     }))
   });
 
+  it("prefers account level", async function() {
+    apiStub.resetHistory();
+
+    process.env.CLOUDFLARE_ACCOUNT_ID = 12;
+    process.env.CLOUDFLARE_ZONE_ID = 10;
+
+    await workers.deploy({
+      name: "TEST",
+      script: "console.log"
+    });
+
+    delete process.env.CLOUDFLARE_ACCOUNT_ID;
+    delete process.env.CLOUDFLARE_ZONE_ID;
+
+    sinon.assert.calledWith(apiStub, sinon.match({
+      url: '/accounts/12/workers/scripts/TEST'
+    }))
+  })
+
   it("supports zoneId for single script customers", async function() {
     apiStub.resetHistory();
 
