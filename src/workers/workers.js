@@ -46,7 +46,7 @@ module.exports = {
     }
 
     let url;
-    if (zoneId) {
+    if (zoneId && !accountId) {
       url = `/zones/${zoneId}/workers/script`
     } else {
       url = `/accounts/${accountId}/workers/scripts/${name}`
