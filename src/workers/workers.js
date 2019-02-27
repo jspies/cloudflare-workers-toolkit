@@ -10,7 +10,6 @@ module.exports = {
    */
   async deploy({accountId, name, script, bindings, zoneId = null}) {
     accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
-    zoneId = zoneId || process.env.CLOUDFLARE_ZONE_ID;
 
     const formData = new FormData();
     formData.append('metadata', JSON.stringify({
@@ -19,7 +18,7 @@ module.exports = {
     }));
 
     let url;
-    if (zoneId && !accountId) {
+    if (zoneId) {
       url = `/zones/${zoneId}/workers/script`
     } else {
       url = `/accounts/${accountId}/workers/scripts/${name}`
