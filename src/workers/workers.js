@@ -1,14 +1,17 @@
 const api = require("../api");
 const FormData = require('form-data');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
   
   /**
    * Deploys a worker.
    * If a zoneId is specified, it will deploy as "Single Script" which does not allow routing.
+   * wasm is an array of filenames
    * @param {*} options
    */
-  async deploy({accountId, name, script, bindings, zoneId = null}) {
+  async deploy({accountId, name, script, wasm = [], bindings, zoneId = null}) {
     accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
 
     const formData = new FormData();
@@ -25,6 +28,16 @@ module.exports = {
     }
 
     formData.append('script', script);
+
+    if (wasm) {
+      wasm.map(function(w) {
+        if (typeof w !== 'string') {
+          throw("WASM should be a string file name");
+        }
+
+        formData.append(path.basename(w, path.extname(w)), fs.readFileSync(path.resolve(__dirname, w)));
+      })
+    }
 
     return await api.cfApiCall({
       url,

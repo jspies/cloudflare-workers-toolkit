@@ -2,6 +2,7 @@ const assert = require("assert");
 const proxyquire = require("proxyquire");
 const sinon = require("sinon");
 const FormData = require("form-data");
+const fs = require("fs");
 
 describe("deploy", function() {
   let workers;
@@ -75,7 +76,54 @@ describe("deploy", function() {
     sinon.assert.calledWith(apiStub, sinon.match({
       url: '/zones/15/workers/script'
     }))
-  })
+  });
+
+  it("handles bad wasm data", async function() {
+    apiStub.resetHistory();
+
+    await workers.deploy({
+      zoneId: 15,
+      script: "console.log",
+      wasm: null
+    });
+    
+    sinon.assert.calledWith(apiStub, sinon.match({
+      body: sinon.match.instanceOf(FormData)
+    }))
+  });
+
+  it("supports wasm in form data", async function() {
+    
+    apiStub.resetHistory();
+
+    await workers.deploy({
+      zoneId: 15,
+      script: "console.log",
+      wasm: ["../../test/fixtures/wasm_script.wasm"]
+    });
+    
+    sinon.assert.calledWith(apiStub, sinon.match({
+      body: {
+        _streams: sinon.match.some(sinon.match(/wasm_script/))
+      }
+    }));
+    
+  });
+
+  it("throws an error if wasm is not a string", async function() {
+    apiStub.resetHistory();
+
+    try {
+      await workers.deploy({
+        zoneId: 15,
+        script: "console.log",
+        wasm: [1]
+      });
+      assert(false);
+    } catch(e) {
+      assert.equal(e, "WASM should be a string file name");
+    }
+  });
 });
 
 describe("remove", function() {
