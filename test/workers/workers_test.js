@@ -99,7 +99,7 @@ describe("deploy", function() {
     await workers.deploy({
       zoneId: 15,
       script: "console.log",
-      wasm: ["../../test/fixtures/wasm_script.wasm"]
+      wasm: [process.cwd() + "/test/fixtures/wasm_script.wasm"]
     });
     
     sinon.assert.calledWith(apiStub, sinon.match({

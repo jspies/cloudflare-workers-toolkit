@@ -35,7 +35,7 @@ module.exports = {
           throw("WASM should be a string file name");
         }
 
-        formData.append(path.basename(w, path.extname(w)), fs.readFileSync(path.resolve(__dirname, w)));
+        formData.append(path.basename(w, path.extname(w)), fs.readFileSync(w));
       })
     }
 
