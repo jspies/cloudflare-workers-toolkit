@@ -1,3 +1,4 @@
+const HttpsProxyAgent = require('https-proxy-agent');
 const fetch = require('node-fetch');
 
 /**
@@ -17,6 +18,12 @@ const cfApiCall = async ({ url, method, contentType = null, body = null }) => {
     },
     method: method
   };
+
+  if (process.env.HTTPS_PROXY || process.env.HTTP_PROXY){
+    console.log("Using Proxy -> " + (process.env.HTTPS_PROXY || process.env.HTTP_PROXY));
+    options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY || process.env.HTTP_PROXY);
+  }
+
   if (contentType) {
     options["headers"]["Content-Type"] = contentType;
   }
