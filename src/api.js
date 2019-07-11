@@ -20,7 +20,6 @@ const cfApiCall = async ({ url, method, contentType = null, body = null }) => {
   };
 
   if (process.env.HTTPS_PROXY || process.env.HTTP_PROXY){
-    console.log("Using Proxy -> " + (process.env.HTTPS_PROXY || process.env.HTTP_PROXY));
     options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY || process.env.HTTP_PROXY);
   }
 
